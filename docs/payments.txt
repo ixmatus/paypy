@@ -1,0 +1,82 @@
++++++++++++++++++++++
+Payment API
++++++++++++++++++++++
+
+.. contents::
+
+------------
+Crash Course
+------------
+
+The PayPy payment module uses nested Zope3 Schema objects to
+"configure" the payment request payload..
+
+*(Note: This is an example using Authorize.net)*
+
+First, import the payment module and the necessary schemas we will be
+using:
+
+    import datetime
+    from paypy.payment              import Payment
+    from paypy.schemas.payment      import SCreditCard
+    from paypy.schemas.billing      import SBilling
+    from paypy.schemas.authnet      import SAuthnetTransaction, SMerchantAuthentication
+    from paypy.schemas.authnet.aim  import SAim
+    
+    # Let's begin by configuring an authentication object:
+    
+    auth       = SMerchantAuthentication()
+    auth.key   = u'my_authnet_key'
+    auth.login = u'my_authnet_login_id'
+    
+    # Now configure a credit card object:
+    
+    cc            = SCreditCard()
+    cc.number     = u'4111111111111111'
+    cc.expiration = datetime.datetime.strptime('2014-04-01', '%Y-%m-%d')
+    
+    # The billing address object:
+
+    billto             = SBilling()
+    billto.firstname   = u'Jane'
+    billto.lastname    = u'Doe'
+    billto.address     = u'48 Notty Road'
+    billto.city        = u'Carlsbad'
+    billto.state       = u'California'
+    billto.postal_code = u'92009'
+    billto.country     = u'USA'
+    billto.phone       = u'(858) 887-5152'
+    
+    # The actual transaction object:
+    
+    trans             = SAuthnetTransaction()
+    trans.testing     = True
+    trans.amount      = u'10.00'
+    trans.payment     = cc      # Our credit card object
+    trans.billing     = billto  # Our billing address object
+    trans.customer_id = u'23'
+    trans.description = u'Transaction description'
+    trans.invoice     = u'423'
+    trans.po          = u'S42'
+    
+    # And finally we stitch the AIM object together and make the payment request:
+    
+    aim                = SAim()
+    aim.transaction    = trans
+    aim.authentication = auth
+    
+    payment = Payment(aim)
+    result  = payment.process()
+    
+    # A successful transaction will return a result object
+    print result.code
+    print result.response_reason
+    print result.po_number
+
+Setting the ``testing`` attribute of the transaction object to
+``True`` will ensure the payment library uses the
+``test.authorize.net/gateway/transact.dll`` endpoint URL. Please note
+that There is a difference between having your merchant account in
+test mode and using an Authorize.net sandbox account. The ``testing``
+attribute will tell the library to send the payment request to the
+sandbox server assuming a sandbox key and login id.

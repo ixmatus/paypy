@@ -1,0 +1,131 @@
++++++++++++++++++++++
+Subscription API
++++++++++++++++++++++
+
+.. contents::
+
+------------
+Crash Course
+------------
+
+*(Note: This is an example using Authorize.net)*
+
+First, import the subscription module:
+
+    >>> from paypy.subscription import Subscription
+
+Options (fields) are passed to the adapter of the subscription library by
+way of a dictionary:
+
+    >>> options = {'amount'     : '.01',
+    ...            'card_num'   : 4111111111111111,
+    ...            'exp_date'   : '02/16',
+    ...            'first_name' : 'Babbock',
+    ...            'last_name'  : 'Narwal',
+    ...            'phone'      : '(352) 818-8035',
+    ...            'address'    : '42 Circle Rd.',
+    ...            'city'       : 'Chicago',
+    ...            'state'      : 'Illinois',
+    ...            'country'    : 'US',
+    ...            'zip'        : '92009',
+    ...            'customer_ip': '0.0.0.0',
+    ...            'tran_key'   : 'your_developer_key',
+    ...            'login'      : 'your_developer_login_id',
+    ...            'testing'    : True
+    ...            }
+	
+	>>> options = {'amount'     : '97.00',
+    ...            'card'       : {'number' : 4111111111111111,
+    ...                            'expiration' : '2018-04'},
+    ...            'billing'    : {'firstname'  : 'Manilo',
+    ...                            'lastname'   : 'Banirf',
+    ...                            'address'    : '99 Meow Rd.',
+    ...                            'city'       : 'Hagerman',
+    ...                            'state'      : 'NM',
+    ...                            'country'    : 'US',
+    ...                            'zip'        : '87505'},
+    ...            'customer'   : {'phone'      : '(501) 391-2121',
+    ...                            'email'      : 'rain@hoothamoofa.org'},
+    ...            'order'      : {'invoice'    : 120,
+    ...                            'description': 'Some subscription order'},
+    ...            'schedule'   : {},
+    ...            'tran_key'   : '7r83Sb4HUd58Tz5p',
+    ...            'login'      : '75sqQ96qHEP8',
+    ...            'testing'    : True
+    ...            }
+
+Setting the ``testing`` key to ``True`` will tell the subscription
+library to use the ``apitest.authorize.net/xml/v1/`` endpoint
+URL. There is a difference between having your merchant account in
+test mode and using a completely separate account specifically for
+testing.
+
+Because Authorize.net merchant accounts may be used by multiple
+applications/websites the design choice was to stick with the
+developer test accounts for testing. (to get one, go here: http://developer.authorize.net/testaccount/)
+
+You can then instantiate the subscription class with the provided options
+and call the ``create()`` method:
+
+    >>> subscription = Subscription(options)
+    >>> results = subscription.create()
+
+Note: you may also specify the adapter you wish to use by providing a
+second argument (argument key is ``adapter``) with the name of the
+adapter you wish to use. The library will default to the Authorize.net
+adapter if none is provided.
+
+Results are given back as an object with important fields assigned to
+the result object. You can access the response code
+(``results.code``), type of response (``results.type``), the hash,
+transaction ID, the raw result string, and a few others. The result
+object has an ``__str__()`` method that will return the subscription
+ID assigned by Authorize.net.
+
+    >>> print results
+    946563
+    >>> print results.code
+    I00001
+    >>> print results.reason
+    Successful.
+    >>> print results.subscription_id
+    946563
+
+---
+API
+---
+
+The API is simple, you instantiate the subscription library with a given
+set of options (fields) and an optional specifier for the type of
+adapter to use as a second argument (if not provided it defaults to
+using the *authnet* adapter). The subscription object then exposes only two
+methods: ``create()``, ``update()``, ``status()``, ``cancel()``.
+
+Calling the object's ``create()`` method will submit the configured
+transaction to the gateway and return a result object.
+
+The standard fields common to all adapters are:
+
+#. Not yet...
+
+The ``testing`` field (not included above) defaults, in all adapters,
+to ``False``.
+
+Gateway specific fields and configuration are documented below.
+
+----------------
+Gateway Specific
+----------------
+
+Authorize.net
+=============
+
+Google
+======
+
+Not yet implemented.
+
+PayPal
+======
+
+Not yet implemented.

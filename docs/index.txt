@@ -1,0 +1,28 @@
+PayPy
+=================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+   
+   payments
+   subscriptions
+   profiles
+   download
+
+Introduction
+------------
+
+PayPy is a multi-gateway integrated payment processing package; it
+uses deeply nested zope3.schema objects (instead of deeply nested
+dicts) for payment setting configuration.
+
+Presently, the only supported gateway is Authorize.net.
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
