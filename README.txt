@@ -1,1 +1,0 @@
-PayPy README
